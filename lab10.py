@@ -11,32 +11,84 @@
 
 
 def eval_rpn(tokens):
-    # Outline (write your plan here first):
-    #   ...
-    # TODO: `tokens` is a list of strings in Reverse Polish Notation - either an integer
-    #   or one of the operators "+", "-", "*", "/". Evaluate it and return the integer
-    #   result. Division should truncate toward zero (int(a / b)).
-    #   Example: ["2","1","+","3","*"]  ->  9
-    pass
+   # my plan is to create a stack and loop through every token and if it's a number convert it to int and add it 
+   # to the stack if it's operator pop the second number and pop the first number, perform the operation and push 
+   # the result back to the stack
+
+
+    stack = []
+
+    for token in tokens:
+        if token not in ["+", "-", "*", "/"]:
+            stack.append(int(token))
+        else:
+            b = stack.pop()
+            a = stack.pop()
+
+            if token == "+":
+                result = a + b
+            elif token == "-":
+                result = a - b
+            elif token == "*":
+                result = a * b
+            elif token == "/":
+                result = int(a / b)
+
+            stack.append(result)
+
+    return stack.pop()
+
 
 
 def decode_string(s):
-    # Outline:
-    #   ...
-    # TODO: decode a string written with the rule k[encoded], meaning `encoded` repeated
-    #   k times. The brackets can be nested.
-    #   Example: "3[a2[c]]"  ->  "accaccacc"
-    pass
+    # so i'll create empty stack loop through each character in the string, if the character is
+    #  in the digit build the repeat number, if it's [ push both the repeat count and string onto
+    #  the string if it's a letter add it to the current string and if it's ] pop the previous string 
+    # and repeat count, repeat the current string by that count and attach it to the previous string
+
+    stack = []
+    current = ""
+    count = 0
+
+    for char in s:
+        if char.isdigit():
+            count = count * 10 + int(char)
+
+        elif char == "[":
+            stack.append((current, count))
+            current = ""
+            count = 0
+
+        elif char == "]":
+            previous, repeat = stack.pop()
+            current = previous + current * repeat
+
+        else:
+            current += char
+
+    return current
 
 
 def daily_temperatures(temps):
-    # Outline:
-    #   ...
-    # TODO: for each day, return how many days you'd wait for a WARMER temperature.
-    #   Put 0 if no warmer day ever comes.
-    #   Example: [73,74,75,71,69,72,76,73]  ->  [1,1,4,2,1,1,0,0]
-    pass
 
+    #this is more striaght forward than the rest imo, all i have to do is create empty
+    #  stack like the rest to store day indexes and after looping thgough the tempreture
+    #  using their indexes pop the previous day from the stack, calculate how many days we
+    #  waited, store that number in the result list and the previous day's index and filally
+    #  push didays index onto the stack  and return the list
+
+
+    result = [0] * len(temps)
+    stack = []
+
+    for i in range(len(temps)):
+        while stack and temps[i] > temps[stack[-1]]:
+            previous_day = stack.pop()
+            result[previous_day] = i - previous_day
+
+        stack.append(i)
+
+    return result
 
 def num_islands(grid):   # Part 4 - stretch (optional)
     # Outline:
